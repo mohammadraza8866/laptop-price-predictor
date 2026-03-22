@@ -81,7 +81,7 @@ ssd = st.sidebar.selectbox("SSD (GB)", [0,8,128,256,512,1024])
 gpu = st.sidebar.selectbox("GPU", df['Gpu brand'].unique())
 os = st.sidebar.selectbox("OS", df['os'].unique())
 
-# ===========================
+
 # Prediction
 # ===========================
 if st.sidebar.button("🚀 Predict Price"):
@@ -94,23 +94,49 @@ if st.sidebar.button("🚀 Predict Price"):
     X_res, Y_res = map(int, resolution.split("x"))
     ppi = ((X_res**2 + Y_res**2)**0.5) / screen_size
 
-    # Create DataFrame (IMPORTANT)
+    # Create DataFrame
     query = pd.DataFrame({
-        'Company': [company],
-        'TypeName': [type_laptop],
-        'Ram': [ram],
-        'Weight': [weight],
-        'Touchscreen': [touchscreen_val],
-        'Ips': [ips_val],
-        'ppi': [ppi],
-        'Cpu brand': [cpu],
-        'HDD': [hdd],
-        'SSD': [ssd],
-        'Gpu brand': [gpu],
-        'os': [os]
+        'Company': [str(company)],
+        'TypeName': [str(type_laptop)],
+        'Ram': [int(ram)],
+        'Weight': [float(weight)],
+        'Touchscreen': [int(touchscreen_val)],
+        'Ips': [int(ips_val)],
+        'ppi': [float(ppi)],
+        'Cpu brand': [str(cpu)],
+        'HDD': [int(hdd)],
+        'SSD': [int(ssd)],
+        'Gpu brand': [str(gpu)],
+        'os': [str(os)]
     })
 
+    # 🔥 CRITICAL FIX 1: Match training columns EXACTLY
+    query = query.reindex(columns=df.drop('Price', axis=1).columns)
+
+    # 🔥 CRITICAL FIX 2: Fill missing (safety)
+    query = query.fillna(0)
+
+    # Predict
     predicted_price = np.exp(pipe_rf.predict(query)[0])
+
+    # UI
+    st.markdown(f"""
+    <div style='
+        background-color: rgba(255,69,0,0.9);
+        padding: 25px;
+        border-radius: 15px;
+        text-align:center;
+        font-size: 28px;
+        font-weight: bold;
+        color: white;
+        margin: 20px auto;
+        width: 60%;
+    '>
+    💰 Predicted Price: ₹ {int(predicted_price):,}
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.balloons()
 
     # ===========================
     # Output UI
