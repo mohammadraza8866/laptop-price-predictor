@@ -1,0 +1,6 @@
+pip install scikit-learn==1.2.2streamlit
+numpy
+pandas
+scikit-learn
+xgboost
+joblib
