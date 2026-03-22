@@ -94,14 +94,13 @@ if st.sidebar.button("🚀 Predict Price"):
     X_res, Y_res = map(int, resolution.split("x"))
     ppi = ((X_res**2 + Y_res**2)**0.5) / screen_size
 
-    # Create DataFrame (IMPORTANT)
     query = pd.DataFrame({
         'Company': [company],
         'TypeName': [type_laptop],
         'Ram': [ram],
         'Weight': [weight],
         'Touchscreen': [touchscreen_val],
-        'Ips': [ips_val],  # correct column name
+        'Ips': [ips_val],
         'ppi': [ppi],
         'Cpu brand': [cpu],
         'HDD': [hdd],
@@ -109,8 +108,7 @@ if st.sidebar.button("🚀 Predict Price"):
         'Gpu brand': [gpu],
         'os': [os]
     })
-
-    # Prediction
+    
     predicted_price = np.exp(pipe_rf.predict(query)[0])
 
     # ===========================
