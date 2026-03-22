@@ -109,7 +109,13 @@ if st.sidebar.button("🚀 Predict Price"):
         'os': [os]
     })
     
-    predicted_price = np.exp(pipe_rf.predict(query)[0])
+    # 🔥 FIX 1: match columns
+    query = query.reindex(columns=df.drop('Price', axis=1).columns)
+    
+    # 🔥 FIX 2: ensure correct dtype
+    for col in query.columns:
+        if col in ['Company','TypeName','Cpu brand','Gpu brand','os']:
+            query[col] = query[col].astype(str)
 
     # ===========================
     # Output UI
